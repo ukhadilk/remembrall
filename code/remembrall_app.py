@@ -7,8 +7,9 @@ import logging as log
 
 app = Flask(__name__)
 config_dict = remembrall_util.get_configs()
+
 # TODO: TAKE THESE TO THE CONFIG FILES
-PAGE_ACCESS_TOKEN = 'EAAMwajgo4A0BAJNjKkevtOjJl93jeFn8SIW89djniZC2qpr5JZBlZAXdjk86pS67lZAncR8iQsul347A3R1OXkw4exSnNZBvolEsAbQ8gl6qFNOTrblVY3ZBT2zRyG4dYnP0R9QFk39tYwwU257McyrTPv6YYdJNERgW2ZBYnZAy6gZDZD'
+PAGE_ACCESS_TOKEN = 'EAAMwajgo4A0BALYI71d9uu7SBsidn2KLTbxNny0KWmaeJkCOOL30X8vsWWxFpAhps1cVZCeZCRdkRpAWmHAUJcw93pEa7CXAG4MNe1b8A7yIZBOv3fUK0JwR4SpAnVTlABt1Xt1KQgxckJWDbICI9vyfksB62GTIvYG6ZBDr4AZDZD'
 VERIFICATION_TOKEN = 'harry_potter'
 
 
@@ -30,16 +31,23 @@ def read_respond_messages():
     for usr_id, message_text in messaging_events(payload):
         print "Incoming from %s: %s" % (usr_id, message_text)
         msg = Message(message_text=message_text, usr_id=usr_id)
-        msg.identify()
+        #msg.identify_rule_based()
+        msg.identify_classifier_based()
+        msg.insert_in_log_table()
         print msg.message_type
-        if msg.message_type == "A":
-            msg.insert_in_log_table()
-            response_message_text = msg.remember()
-            send_message(PAGE_ACCESS_TOKEN, usr_id, response_message_text)
-        else:
-            msg.insert_in_log_table()
+
+        if msg.message_type in {'T', 'I', 'C'}:
+            try:
+                response_message_text=msg.load_fixed_response_messages()
+            except LookupError:
+                response_message_text = msg.remember()
+
+        elif msg.message_type =='Q':
             response_message_text = msg.seek()
-            send_message(PAGE_ACCESS_TOKEN, usr_id, response_message_text)
+
+        else:
+            response_message_text = msg.remember()
+        send_message(PAGE_ACCESS_TOKEN, usr_id, response_message_text)
     return "ok"
 
 def messaging_events(payload):

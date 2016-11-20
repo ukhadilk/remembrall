@@ -1,7 +1,9 @@
 import nltk
 from fuzzywuzzy import fuzz
 from remembrall_db_helper import PostgresHelper
+from remembrall_msg_type_classifier import MessageClassifier
 import logging as log
+import os
 log.basicConfig(level=log.DEBUG)
 import random
 import datetime
@@ -78,7 +80,7 @@ class Message(object):
     def construct_normalized_message(self):
         pass
 
-    def identify(self):
+    def identify_rule_based(self):
         if self.tokenized_message[-1] == "?":
             self.message_type = "Q"
             return "Q"
@@ -87,6 +89,31 @@ class Message(object):
             for token in self.tokenized_message:
                 if token.lower() in q_set:
                     self.message_type = "Q"
+
+    def identify_classifier_based(self):
+        if self.message_text.lower() in {"thank you!", "thanks!", "thanks", "thank you"}:
+            self.message_type = "T"
+        else:
+            msg_classifier = MessageClassifier()
+            self.message_type = msg_classifier.predict_message_type(self.message_text)
+
+    def load_fixed_response_messages(self):
+        print "In here too"
+        response_list = []
+        print
+        response_file_path = os.path.join(config_dict['PARENT_DIR'], config_dict[self.message_type+'_response_file'])
+        print "Response file path", response_file_path
+        try:
+            with open(response_file_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line != "":
+                        response_list.append(line)
+            print "Response list", response_list
+            return random.choice(response_list)
+        except:
+            print "Could not lookup error!"
+            raise LookupError
 
     def insert_in_log_table(self):
         postgres = PostgresHelper()
@@ -165,15 +192,26 @@ class Message(object):
 
 if __name__ == '__main__':
     while(True):
-        msg = raw_input("Print your message:")
-        if msg==-1:
+        text = raw_input("Print your message:")
+        if text==-1:
             break
-        msg = Message(msg)
-        msg.identify()
+        msg = Message(text,"urjit")
+        #msg.identify_rule_based()
+
+        msg.identify_classifier_based()
+        msg.insert_in_log_table()
         print msg.message_type
-        if msg.message_type == "A":
-            msg.insert_in_log_table()
-            msg.remember()
+        if msg.message_type in {'T', 'I', 'C'}:
+            try:
+                print "In here"
+                response_message_text=msg.load_fixed_response_messages()
+            except LookupError:
+                print "Error"
+                response_message_text = msg.remember()
+
+        elif msg.message_type =='Q':
+            response_message_text = msg.seek()
+
         else:
-            msg.insert_in_log_table()
-            msg.seek()
+            response_message_text = msg.remember()
+        print response_message_text
