@@ -177,7 +177,7 @@ class Message(object):
         print self.nouns
         if len(self.nouns) == 0:
             print "Sorry, I cannot understand"
-            return
+            return "Sorry, I cannot understand"
 
         condition = "WHERE noun in ({}) AND usr_id = '{}'".format(','.join('%s'
                                             for n in self.nouns), self.usr_id)
