@@ -10,6 +10,7 @@ pickleshare>=0.5
 psycopg2>=2.4.5
 pycrypto>=2.6.1
 requests>=2.2.1
+scipy>=0.13.3
 scikit-learn>=0.18.1
 sklearn>=0.0
 urllib3>=1.7.1
