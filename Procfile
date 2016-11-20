@@ -1,1 +1,1 @@
-web: python remembrall_app.py
+web: python /app/remembrall_app.py
