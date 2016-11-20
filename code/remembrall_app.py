@@ -8,14 +8,11 @@ import logging as log
 app = Flask(__name__)
 config_dict = remembrall_util.get_configs()
 
-# TODO: TAKE THESE TO THE CONFIG FILES
-PAGE_ACCESS_TOKEN = 'EAAMwajgo4A0BALYI71d9uu7SBsidn2KLTbxNny0KWmaeJkCOOL30X8vsWWxFpAhps1cVZCeZCRdkRpAWmHAUJcw93pEa7CXAG4MNe1b8A7yIZBOv3fUK0JwR4SpAnVTlABt1Xt1KQgxckJWDbICI9vyfksB62GTIvYG6ZBDr4AZDZD'
-VERIFICATION_TOKEN = 'harry_potter'
-
 
 @app.route('/', methods=['GET'])
 def verification_get_method():
-    if request.args.get('hub.verify_token', '') == VERIFICATION_TOKEN:
+    if request.args.get('hub.verify_token', '') == \
+            config_dict['VERIFICATION_TOKEN']:
         print "Verification successful!"
         return request.args.get('hub.challenge', '')
     else:
@@ -38,7 +35,7 @@ def read_respond_messages():
 
         if msg.message_type in {'T', 'I', 'C'}:
             try:
-                response_message_text=msg.load_fixed_response_messages()
+                response_message_text=msg.get_response_message()
             except LookupError:
                 response_message_text = msg.remember()
 
@@ -47,7 +44,9 @@ def read_respond_messages():
 
         else:
             response_message_text = msg.remember()
-        send_message(PAGE_ACCESS_TOKEN, usr_id, response_message_text)
+        send_message(config_dict['PAGE_ACCESS_TOKEN'],
+                     usr_id,
+                     response_message_text)
     return "ok"
 
 def messaging_events(payload):
@@ -58,7 +57,8 @@ def messaging_events(payload):
   message_cluster = data["entry"][0]["messaging"]
   for message_data in message_cluster:
     if "message" in message_data and "text" in message_data["message"]:
-      yield message_data["sender"]["id"], message_data["message"]["text"].encode('unicode_escape')
+      yield message_data["sender"]["id"], \
+            message_data["message"]["text"].encode('unicode_escape')
     else:
       yield message_data["sender"]["id"], ""
 

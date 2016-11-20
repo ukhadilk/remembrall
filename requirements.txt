@@ -1,0 +1,15 @@
+Flask>=0.11.1
+Werkzeug>=0.11.11
+fuzzywuzzy>=0.14.0
+nltk>=3.2.1
+numpy>=1.8.2
+oauth>=1.0.1
+oauthlib>=0.6.1
+pandas>=0.19.1
+pickleshare>=0.5
+psycopg2>=2.4.5
+pycrypto>=2.6.1
+requests>=2.2.1
+scikit-learn>=0.18.1
+sklearn>=0.0
+urllib3>=1.7.1

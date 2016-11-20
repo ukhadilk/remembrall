@@ -3,18 +3,14 @@ from fuzzywuzzy import fuzz
 from remembrall_db_helper import PostgresHelper
 from remembrall_msg_type_classifier import MessageClassifier
 import logging as log
-import os
+
 log.basicConfig(level=log.DEBUG)
 import random
 import datetime
 import remembrall_util
 
 config_dict = remembrall_util.get_configs()
-#USR_ID = 'UK'
-LOG_TABLE = 'RMBRBOT.MSG_LOG_TABLE'
-MAIN_TABLE = 'RMBRBOT.MSG_MAIN_TABLE'
-
-
+response_dict = remembrall_util.load_saved_response_messages()
 
 class BestMatcher(object):
 
@@ -43,9 +39,12 @@ class BestMatcher(object):
     def calculate_score(self):
         for message_id in self.result_dict:
             curr_message = self.result_dict[message_id]['msg_text']
-            self.result_dict[message_id]['fuzzy_score'] = fuzz.token_sort_ratio(curr_message, self.q_message)
-            self.result_dict[message_id]['count_score'] = (100*self.result_dict[message_id]['count'])/self.max_count
-            total_score = self.result_dict[message_id]['fuzzy_score'] + self.result_dict[message_id]['count_score']
+            self.result_dict[message_id]['fuzzy_score'] = \
+                fuzz.token_sort_ratio(curr_message, self.q_message)
+            self.result_dict[message_id]['count_score'] = \
+                (100*self.result_dict[message_id]['count'])/self.max_count
+            total_score = self.result_dict[message_id]['fuzzy_score'] + \
+                          self.result_dict[message_id]['count_score']
             self.result_dict[message_id]['total_score'] = total_score
             if total_score > self.max_total_score:
                 self.max_total_score = total_score
@@ -91,38 +90,34 @@ class Message(object):
                     self.message_type = "Q"
 
     def identify_classifier_based(self):
-        if self.message_text.lower() in {"thank you!", "thanks!", "thanks", "thank you"}:
+        if len(self.message_text) < 3:
+            self.message_type = "I"
+
+        elif self.message_text.lower() in {"thank you!",
+                                           "thanks!", "thanks", "thank you"}:
             self.message_type = "T"
+
         else:
             msg_classifier = MessageClassifier()
-            self.message_type = msg_classifier.predict_message_type(self.message_text)
+            self.message_type = msg_classifier.predict_message_type(
+                self.message_text)
 
-    def load_fixed_response_messages(self):
-        print "In here too"
-        response_list = []
-        print
-        response_file_path = os.path.join(config_dict['PARENT_DIR'], config_dict[self.message_type+'_response_file'])
-        print "Response file path", response_file_path
-        try:
-            with open(response_file_path) as f:
-                for line in f:
-                    line = line.strip()
-                    if line != "":
-                        response_list.append(line)
-            print "Response list", response_list
-            return random.choice(response_list)
-        except:
-            print "Could not lookup error!"
-            raise LookupError
+    def get_response_message(self):
+        return random.choice(response_dict[self.message_type])
 
     def insert_in_log_table(self):
         postgres = PostgresHelper()
-        curr_max = postgres.postgres_select_max_from(table_name=LOG_TABLE, column_name="msg_id")
+        curr_max = postgres.postgres_select_max_from(
+            table_name=config_dict['LOG_TABLE'],
+            column_name="msg_id")
         self.message_id = curr_max + 1
 
-        insertion_dict = [{'usr_id': self.usr_id, 'msg_id': self.message_id, 'msg_text': self.message_text,
-                           'msg_typ':self.message_type, 'cr_ts': str(datetime.datetime.now())}]
-        postgres.postgres_insert_dictionary_list(dict_list=insertion_dict, table_name=LOG_TABLE)
+        insertion_dict = [{'usr_id': self.usr_id, 'msg_id': self.message_id,
+                           'msg_text': self.message_text,
+                           'msg_typ':self.message_type,
+                           'cr_ts': str(datetime.datetime.now())}]
+        postgres.postgres_insert_dictionary_list(
+            dict_list=insertion_dict, table_name=config_dict['LOG_TABLE'])
         postgres.con.close()
 
     def construct_remember_dict_list(self):
@@ -151,6 +146,13 @@ class Message(object):
             elif tag[1][0] == 'V':
                 self.verbs.append(tag[0].lower())
 
+    def rephrase_answer(self, best_match_message):
+        #rules to rephrase the answer
+        best_match_message = best_match_message.replace("My", "Your")\
+            .replace("my", "your").replace("I", "You")
+
+        return best_match_message
+
     def remember(self):
         postgres = PostgresHelper()
         self.tag_pos()
@@ -158,10 +160,16 @@ class Message(object):
         print self.verbs
         self.construct_remember_dict_list()
         print self.insert_dict_list
-        postgres.postgres_insert_dictionary_list(table_name=MAIN_TABLE, dict_list=self.insert_dict_list)
+        postgres.postgres_insert_dictionary_list(
+            table_name=config_dict['MAIN_TABLE'],
+            dict_list=self.insert_dict_list)
         log.debug("remembered")
         postgres.con.close()
-        return "Alright, I'll remember that!"
+        try:
+            return self.get_response_message()
+        except Exception as err:
+            print "error in fetching response message in remember()"
+            return "Alright, I'll remember that!"
 
     def seek(self):
         postgres = PostgresHelper()
@@ -171,10 +179,14 @@ class Message(object):
             print "Sorry, I cannot understand"
             return
 
-        condition = "WHERE noun in ({}) AND usr_id = '{}'".format(','.join('%s' for n in self.nouns), self.usr_id)
+        condition = "WHERE noun in ({}) AND usr_id = '{}'".format(','.join('%s'
+                                            for n in self.nouns), self.usr_id)
 
-        answers = postgres.postgres_select(table_name=MAIN_TABLE, req_column_list='*', return_dict=True,
-                                           condition=condition, parameters=self.nouns)
+        answers = postgres.postgres_select(table_name=config_dict['MAIN_TABLE'],
+                                           req_column_list='*',
+                                           return_dict=True,
+                                           condition=condition,
+                                           parameters=self.nouns)
         postgres.con.close()
         print answers
         print ""
@@ -184,10 +196,13 @@ class Message(object):
             best_match_dict = bestMatcher.find_best_match()
 
             if bestMatcher.confident == 0:
-                print ("I'm not very sure but I think this is what you are looking for: " \
-                       + best_match_dict['msg_text'])
+                best_match_msg = ("I'm not very "
+                                "sure but I think this is what you are "
+                                "looking for: " + best_match_dict['msg_text'])
+                return best_match_msg
             else:
-                return best_match_dict['msg_text']
+                best_match_msg =  best_match_dict['msg_text']
+                return self.rephrase_answer(best_match_msg)
         return "I'm sorry, I don't know the answer to that."
 
 if __name__ == '__main__':
@@ -203,13 +218,12 @@ if __name__ == '__main__':
         print msg.message_type
         if msg.message_type in {'T', 'I', 'C'}:
             try:
-                print "In here"
-                response_message_text=msg.load_fixed_response_messages()
+                response_message_text=msg.get_response_message()
             except LookupError:
                 print "Error"
                 response_message_text = msg.remember()
 
-        elif msg.message_type =='Q':
+        elif msg.message_type == 'Q':
             response_message_text = msg.seek()
 
         else:

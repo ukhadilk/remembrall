@@ -1,6 +1,7 @@
 from pandas import DataFrame
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.externals import joblib
 from sklearn.pipeline import Pipeline
 import remembrall_util
@@ -52,10 +53,10 @@ class MessageClassifier(object):
                 return 'Q'
 
     def train_classifier(self):
-        cls.fetch_training_data()
+        self.fetch_training_data()
         training_df = DataFrame(self.combined_training_data)
         self.classifier_pipeline = Pipeline([('vectorizer', CountVectorizer()),
-                                      ('classifier', MultinomialNB()) ])
+                                      ('classifier', RandomForestClassifier()) ])
         self.classifier_pipeline.fit(training_df['text'].values,
                                      training_df['class'].values)
         joblib.dump(self.classifier_pipeline, os.path.join(
@@ -85,5 +86,9 @@ class MessageClassifier(object):
 
 if __name__ == '__main__':
     cls = MessageClassifier()
-    #cls.train_classifier()
-    cls.predict_message_type("test sentence here")
+    cls.train_classifier()
+    while(True):
+        text = raw_input("Input here:, -1 to exit")
+        if text == '-1':
+            break
+        cls.predict_message_type(text)
