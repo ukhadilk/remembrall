@@ -1,5 +1,6 @@
 from flask import Flask, request
 from remembrall_core import Message, BestMatcher
+import os
 import json
 import requests
 import remembrall_util
@@ -81,4 +82,5 @@ def send_message(token, recipient, text):
 
 
 if __name__ == '__main__':
-  app.run()
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
