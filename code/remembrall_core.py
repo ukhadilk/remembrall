@@ -3,6 +3,7 @@ from fuzzywuzzy import fuzz
 from remembrall_db_helper import PostgresHelper
 from remembrall_msg_type_classifier import MessageClassifier
 import logging as log
+import re
 
 log.basicConfig(level=log.DEBUG)
 import random
@@ -11,7 +12,8 @@ import remembrall_util
 
 config_dict = remembrall_util.get_configs()
 response_dict = remembrall_util.load_saved_response_messages()
-
+known_qa_dict = remembrall_util.load_saved_response_known_qa()
+bot_specific_question_phrases = remembrall_util.load_bot_specific_questions()
 class BestMatcher(object):
 
     def __init__(self, list_of_dict, q_message):
@@ -90,6 +92,10 @@ class Message(object):
                     self.message_type = "Q"
 
     def identify_classifier_based(self):
+
+        regex = re.compile('[^a-z ]')
+        normalized_msg_text = regex.sub('', self.message_text.lower())
+        print "normalized_msg_text", normalized_msg_text,
         if len(self.message_text) < 3:
             self.message_type = "I"
 
@@ -97,13 +103,26 @@ class Message(object):
                                            "thanks!", "thanks", "thank you"}:
             self.message_type = "T"
 
+        elif normalized_msg_text in known_qa_dict:
+            self.message_type = 'K'
+
         else:
+            for bot_spec_phrase in bot_specific_question_phrases:
+                if normalized_msg_text.startswith(bot_spec_phrase):
+                    self.message_type = 'B'
+                    return
+
             msg_classifier = MessageClassifier()
             self.message_type = msg_classifier.predict_message_type(
                 self.message_text)
 
     def get_response_message(self):
-        return random.choice(response_dict[self.message_type])
+        if self.message_type in {'T', 'C', 'I', 'B'}:
+            return random.choice(response_dict[self.message_type])
+        else:
+            regex = re.compile('[^a-z ]')
+            normalized_msg_text = regex.sub('', self.message_text.lower())
+            return known_qa_dict[normalized_msg_text]
 
     def insert_in_log_table(self):
         postgres = PostgresHelper()
@@ -216,11 +235,11 @@ if __name__ == '__main__':
         msg.identify_classifier_based()
         msg.insert_in_log_table()
         print msg.message_type
-        if msg.message_type in {'T', 'I', 'C'}:
+        if msg.message_type in {'T', 'I', 'C', 'K', 'B'}:
             try:
                 response_message_text=msg.get_response_message()
-            except LookupError:
-                print "Error"
+            except LookupError, e:
+                print "Lookup Error", str(e)
                 response_message_text = msg.remember()
 
         elif msg.message_type == 'Q':

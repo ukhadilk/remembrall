@@ -33,8 +33,12 @@ def read_respond_messages():
         msg.identify_classifier_based()
         msg.insert_in_log_table()
         print msg.message_type
-
-        if msg.message_type in {'T', 'I', 'C'}:
+        #T=Thanks
+        #I=Insult
+        #C=compliment
+        #K=known QA
+        #B=bot specific question
+        if msg.message_type in {'T', 'I', 'C', 'K', 'B'}:
             try:
                 response_message_text=msg.get_response_message()
             except LookupError:
