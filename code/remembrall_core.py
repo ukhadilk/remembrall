@@ -117,7 +117,7 @@ class Message(object):
                 self.message_text)
 
     def get_response_message(self):
-        if self.message_type in {'T', 'C', 'I', 'B'}:
+        if self.message_type in {'A', 'T', 'C', 'I', 'B'}:
             return random.choice(response_dict[self.message_type])
         else:
             regex = re.compile('[^a-z ]')
