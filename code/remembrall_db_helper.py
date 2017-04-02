@@ -14,12 +14,6 @@ class PostgresHelper(object):
         attempt_number = 1
         while (True):
             try:
-                #TODO: CHANGE TO CONNECTION STRING FROM CONFIG FILE
-                #self.con = psycopg2.connect("dbname=postgres user=postgres password=urjit@123 host=localhost")
-                #print config_dict['DATABASE_URL']
-
-                print config_dict['DATABASE_URL']
-                print "Done prining"
                 self.con = psycopg2.connect(config_dict['DATABASE_URL'])
                 break
             except Exception as err:

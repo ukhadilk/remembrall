@@ -1,6 +1,5 @@
 from pandas import DataFrame
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.externals import joblib
 from sklearn.pipeline import Pipeline
@@ -8,7 +7,7 @@ import remembrall_util
 import os
 
 config_dict = remembrall_util.get_configs()
-print config_dict
+
 class MessageClassifier(object):
 
     def __init__(self):
@@ -55,10 +54,13 @@ class MessageClassifier(object):
     def train_classifier(self):
         self.fetch_training_data()
         training_df = DataFrame(self.combined_training_data)
+
         self.classifier_pipeline = Pipeline([('vectorizer', CountVectorizer()),
                                       ('classifier', RandomForestClassifier()) ])
+
         self.classifier_pipeline.fit(training_df['text'].values,
                                      training_df['class'].values)
+
         joblib.dump(self.classifier_pipeline, os.path.join(
             config_dict['PARENT_DIR'], config_dict['model_file_path']))
 

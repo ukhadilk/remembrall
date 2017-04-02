@@ -14,6 +14,7 @@ config_dict = remembrall_util.get_configs()
 response_dict = remembrall_util.load_saved_response_messages()
 known_qa_dict = remembrall_util.load_saved_response_known_qa()
 bot_specific_question_phrases = remembrall_util.load_bot_specific_questions()
+
 class BestMatcher(object):
 
     def __init__(self, list_of_dict, q_message):
@@ -58,7 +59,7 @@ class BestMatcher(object):
         print self.result_dict[self.max_total_score_id]
         #todo: total score
 
-        if self.result_dict[self.max_total_score_id]['fuzzy_score'] < 60:
+        if self.result_dict[self.max_total_score_id]['fuzzy_score'] < 55:
             self.confident = 0
         return self.result_dict[self.max_total_score_id]
 
@@ -156,14 +157,15 @@ class Message(object):
 
     def tag_pos(self):
         text = self.tokenized_message
-        print "text", text
         tagged = nltk.pos_tag(text)
 
         for tag in tagged:
             if tag[1][0] == 'N' or tag[1] == 'PRP' or tag[1] == 'DT':
-                self.nouns.append(tag[0].lower())
+                n = remembrall_util.normalize_and_stem(tag[0])
+                self.nouns.append(n)
             elif tag[1][0] == 'V':
-                self.verbs.append(tag[0].lower())
+                v = remembrall_util.normalize_and_stem(tag[0])
+                self.verbs.append(v)
 
     def rephrase_answer(self, best_match_message):
         #rules to rephrase the answer
@@ -175,10 +177,10 @@ class Message(object):
     def remember(self):
         postgres = PostgresHelper()
         self.tag_pos()
-        print self.nouns
-        print self.verbs
+        print "Nouns:", self.nouns
+        print "Verbs", self.verbs
         self.construct_remember_dict_list()
-        print self.insert_dict_list
+
         postgres.postgres_insert_dictionary_list(
             table_name=config_dict['MAIN_TABLE'],
             dict_list=self.insert_dict_list)
@@ -234,7 +236,6 @@ if __name__ == '__main__':
 
         msg.identify_classifier_based()
         msg.insert_in_log_table()
-        print msg.message_type
         if msg.message_type in {'T', 'I', 'C', 'K', 'B'}:
             try:
                 response_message_text=msg.get_response_message()
