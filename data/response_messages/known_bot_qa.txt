@@ -9,3 +9,5 @@ What do you like=I am a bot, made up of classes and objects, wires and signals. 
 Are you smart=Not as smart as you! 
 Are you an idiot=I wonder why you would say that :(
 What is your favorite color=As a bot I don't really have any preferences about colors. What about you?
+How are you=I'm doing good! What can I remember for you?
+What can you do=I can remember things for you!

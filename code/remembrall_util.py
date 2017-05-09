@@ -3,7 +3,6 @@ from nltk.stem import SnowballStemmer
 config_dict={}
 
 stemmer = SnowballStemmer(language="english")
-
 def normalize_and_stem(word):
     return stemmer.stem(word.lower())
 
@@ -59,7 +58,7 @@ def load_bot_specific_questions():
 
 def load_saved_response_messages():
     response_messages = dict()
-    message_types = ['A', 'C', 'T', 'I', 'B']
+    message_types = ['A', 'C', 'T', 'I', 'B', 'G']
     for message_type in message_types:
         response_file_path = os.path.join(
             config_dict['PARENT_DIR'],
@@ -81,6 +80,7 @@ def load_saved_response_messages():
             response_messages['I'] = ["I'm sorry, I do not follow. Could you "
                                       "please rephrase?"]
             response_messages['T'] = ["You're welcome :)"]
+            response_messages['G'] = ["Hello :)"]
             return response_messages
     return response_messages
 

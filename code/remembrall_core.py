@@ -15,6 +15,10 @@ response_dict = remembrall_util.load_saved_response_messages()
 known_qa_dict = remembrall_util.load_saved_response_known_qa()
 bot_specific_question_phrases = remembrall_util.load_bot_specific_questions()
 
+greeting_set = {'hi','hey','hello'}
+q_set = {"why", "what", "when", "who", "where", "how", "which"}
+thank_set = {"thank you!", "thanks!", "thanks", "thank you"}
+
 class BestMatcher(object):
 
     def __init__(self, list_of_dict, q_message):
@@ -87,21 +91,30 @@ class Message(object):
             self.message_type = "Q"
             return "Q"
         else:
-            q_set = {"why", "what", "when", "who", "where", "how", "which"}
+
             for token in self.tokenized_message:
                 if token.lower() in q_set:
                     self.message_type = "Q"
+
+    def check_for_greeting(self):
+        for token in self.tokenized_message:
+            if token.lower() in greeting_set:
+                return True
+        return False
 
     def identify_classifier_based(self):
 
         regex = re.compile('[^a-z ]')
         normalized_msg_text = regex.sub('', self.message_text.lower())
         print "normalized_msg_text", normalized_msg_text,
-        if len(self.message_text) < 3:
+
+        if self.check_for_greeting() is True:
+            self.message_type = 'G'
+
+        elif len(self.message_text) < 3:
             self.message_type = "I"
 
-        elif self.message_text.lower() in {"thank you!",
-                                           "thanks!", "thanks", "thank you"}:
+        elif self.message_text.lower() in thank_set:
             self.message_type = "T"
 
         elif normalized_msg_text in known_qa_dict:
@@ -118,7 +131,7 @@ class Message(object):
                 self.message_text)
 
     def get_response_message(self):
-        if self.message_type in {'A', 'T', 'C', 'I', 'B'}:
+        if self.message_type in {'A', 'T', 'C', 'I', 'B', 'G'}:
             return random.choice(response_dict[self.message_type])
         else:
             regex = re.compile('[^a-z ]')
@@ -236,7 +249,7 @@ if __name__ == '__main__':
 
         msg.identify_classifier_based()
         msg.insert_in_log_table()
-        if msg.message_type in {'T', 'I', 'C', 'K', 'B'}:
+        if msg.message_type in {'T', 'I', 'C', 'K', 'B', 'G'}:
             try:
                 response_message_text=msg.get_response_message()
             except LookupError, e:
