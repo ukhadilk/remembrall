@@ -16,6 +16,7 @@ known_qa_dict = remembrall_util.load_saved_response_known_qa()
 bot_specific_question_phrases = remembrall_util.load_bot_specific_questions()
 
 greeting_set = {'hi','hey','hello'}
+day_time_set = {"morning", "afternoon", "evening", "night", "noon"}
 q_set = {"why", "what", "when", "who", "where", "how", "which"}
 thank_set = {"thank you!", "thanks!", "thanks", "thank you"}
 
@@ -72,8 +73,9 @@ class Message(object):
     def __init__(self, message_text, usr_id):
         self.usr_id = usr_id
         self.message_text = message_text
-        self.nomalized_message = ""
+        self.normalized_message = self.normalize_message()
         self.tokenized_message = nltk.word_tokenize(self.message_text)
+        self.normalized_tokens = nltk.word_tokenize(self.normalized_message)
         self.nouns = list()
         self.verbs = list()
         self.insert_dict_list = list()
@@ -83,8 +85,9 @@ class Message(object):
     def remove_bot_specific_words(self):
         pass
 
-    def construct_normalized_message(self):
-        pass
+    def normalize_message(self):
+        regex = re.compile('[^a-z ]')
+        return regex.sub('', self.message_text.lower())
 
     def identify_rule_based(self):
         if self.tokenized_message[-1] == "?":
@@ -100,13 +103,15 @@ class Message(object):
         for token in self.tokenized_message:
             if token.lower() in greeting_set:
                 return True
+        if "good" in self.normalized_tokens and len(self.normalized_tokens) < 4:
+            for token in self.normalized_tokens:
+                if token in day_time_set:
+                    return True
         return False
 
     def identify_classifier_based(self):
 
-        regex = re.compile('[^a-z ]')
-        normalized_msg_text = regex.sub('', self.message_text.lower())
-        print "normalized_msg_text", normalized_msg_text,
+        print "normalized_msg_text", self.normalized_message,
 
         if self.check_for_greeting() is True:
             self.message_type = 'G'
@@ -117,12 +122,12 @@ class Message(object):
         elif self.message_text.lower() in thank_set:
             self.message_type = "T"
 
-        elif normalized_msg_text in known_qa_dict:
+        elif self.normalized_message in known_qa_dict:
             self.message_type = 'K'
 
         else:
             for bot_spec_phrase in bot_specific_question_phrases:
-                if normalized_msg_text.startswith(bot_spec_phrase):
+                if self.normalized_message.startswith(bot_spec_phrase):
                     self.message_type = 'B'
                     return
 
@@ -134,9 +139,7 @@ class Message(object):
         if self.message_type in {'A', 'T', 'C', 'I', 'B', 'G'}:
             return random.choice(response_dict[self.message_type])
         else:
-            regex = re.compile('[^a-z ]')
-            normalized_msg_text = regex.sub('', self.message_text.lower())
-            return known_qa_dict[normalized_msg_text]
+            return known_qa_dict[self.normalized_message]
 
     def insert_in_log_table(self):
         postgres = PostgresHelper()
