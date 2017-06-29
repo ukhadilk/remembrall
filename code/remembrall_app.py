@@ -15,7 +15,7 @@ config_dict = remembrall_util.get_configs()
 @app.route('/privacy/', methods=['GET'])
 def return_privacy_page():
     print "In here"
-    static_dir = config_dict['PARENT_DIR'] + 'static'
+    static_dir = config_dict['PARENT_DIR'] + '/static'
     print static_dir
     return send_from_directory(directory=static_dir, filename='remembrall_privacy.html')
 
