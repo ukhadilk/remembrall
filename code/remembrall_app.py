@@ -40,7 +40,7 @@ def read_respond_messages():
         print "Incoming from %s: %s" % (usr_id, message_text)
         msg = Message(message_text=message_text, usr_id=usr_id)
         #msg.identify_rule_based()
-        msg.identify_classifier_based()
+        msg.identify_message_type()
         msg.insert_in_log_table()
         print msg.message_type
         #T=Thanks

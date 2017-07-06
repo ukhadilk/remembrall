@@ -18,3 +18,6 @@ That's okay=:)
 Nothing=Okay! :)
 Okay=:)
 Can I ask you a question?=Sure!
+anything=I would love to help you! But anything is a little vague :)
+everything=I would love to help you! But everything is too much :D
+magic=I love magic! I draw my name from the magical story of Harry Potter! What can I remember for you?
