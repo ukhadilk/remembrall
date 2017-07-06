@@ -1,7 +1,6 @@
 import os
 from nltk.stem import SnowballStemmer
 config_dict={}
-
 stemmer = SnowballStemmer(language="english")
 def normalize_and_stem(word):
     return stemmer.stem(word.lower())

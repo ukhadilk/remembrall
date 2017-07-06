@@ -118,7 +118,11 @@ class Message(object):
         if self.message_type in {'A', 'T', 'C', 'I', 'B', 'G'}:
             return random.choice(response_dict[self.message_type])
         elif self.message_type == "K":
-            return known_qa_dict[self.normalized_message]
+            if self.normalized_message in known_qa_dict:
+                return known_qa_dict[self.normalized_message]
+            else:
+                return known_qa_dict[self.message_text]
+
         else:
             return random.choice(response_dict[self.A])
 
@@ -161,7 +165,7 @@ class Message(object):
             if tag[1][0] == 'N' or tag[1] == 'PRP' or tag[1] == 'DT':
                 n = remembrall_util.normalize_and_stem(tag[0])
                 self.nouns.append(n)
-            elif tag[1][0] == 'V':
+            elif tag[1][0] == 'V' or tag[1][0] == 'VBP' or tag[1][0] == 'VB':
                 v = remembrall_util.normalize_and_stem(tag[0])
                 self.verbs.append(v)
 
@@ -193,7 +197,9 @@ class Message(object):
     def seek(self):
         postgres = PostgresHelper()
         self.tag_pos()
-        print self.nouns
+
+        print "Nouns:", self.nouns
+        print "Verbs", self.verbs
         if len(self.nouns) == 0:
             print "Sorry, I cannot understand"
             return "Sorry, I cannot understand"

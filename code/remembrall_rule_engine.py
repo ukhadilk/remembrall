@@ -5,8 +5,8 @@ known_qa_dict = remembrall_util.load_saved_response_known_qa()
 
 class RuleEngine(object):
     def __init__(self):
-        self.rules = [RuleGreeting(), RuleInvalid(), RuleThankYou(), RuleKnownQA(), RuleBotSpecific(), RuleClassifier(), RuleShortMessage()]
-        self.rules = sorted((rule for rule in self.rules), key=lambda x: x.priority)
+        self.rules_list = [RuleGreeting(), RuleInvalid(), RuleThankYou(), RuleKnownQA(), RuleBotSpecific(), RuleClassifier(), RuleShortMessage()]
+        self.rules = sorted((rule for rule in self.rules_list), key=lambda x: x.priority)
 
     def apply_rules(self, message_texts):
 
@@ -41,7 +41,7 @@ class RuleGreeting(Rule):
             if token.lower() in self.greeting_set:
                 return True
         if "good" in message_texts.normalized_tokens and len(message_texts.normalized_tokens) < 4:
-            for token in message.normalized_tokens:
+            for token in message_texts.normalized_tokens:
                 if token in self.day_time_set:
                     return True
         return False
@@ -54,10 +54,29 @@ class RuleGreeting(Rule):
         return False
 
 
+class RuleKnownQA(Rule):
+
+    def __init__(self):
+        Rule.__init__(self, type="K", priority=2)
+        self.known_qa_dict = known_qa_dict
+
+    def apply(self, message_texts):
+        if message_texts.normalized_message in self.known_qa_dict:
+            print "Applied Rule:", "K"
+            return True
+
+        if message_texts.message_text in self.known_qa_dict:
+            print "Applied Rule:", "K"
+
+            return True
+
+        return False
+
+
 class RuleInvalid(Rule):
     #INVALID
     def __init__(self):
-        Rule.__init__(self, type="I", priority=2)
+        Rule.__init__(self, type="I", priority=3)
 
     def apply(self, message_texts):
         if len(message_texts.message_text) < 3:
@@ -71,7 +90,7 @@ class RuleInvalid(Rule):
 class RuleThankYou(Rule):
 
     def __init__(self):
-        Rule.__init__(self, type="T", priority=3)
+        Rule.__init__(self, type="T", priority=4)
         self.thank_set = {"thank you!", "thanks!", "thanks", "thank you", "thank u"}
 
     def apply(self, message_texts):
@@ -81,18 +100,6 @@ class RuleThankYou(Rule):
             return True
         return False
 
-class RuleKnownQA(Rule):
-
-    def __init__(self):
-        Rule.__init__(self, type="K", priority=4)
-        self.known_qa_dict = known_qa_dict
-
-    def apply(self, message_texts):
-        if message_texts.normalized_message in self.known_qa_dict:
-            print "Applied Rule:", "K"
-
-            return True
-        return False
 
 
 class RuleBotSpecific(Rule):
@@ -113,7 +120,7 @@ class RuleBotSpecific(Rule):
 
 class RuleShortMessage(Rule):
     def __init__(self):
-        Rule.__init__(self, type="I", priority=6)
+        Rule.__init__(self, type="I", priority=991)
 
     def apply(self, message_texts):
         if len(message_texts.normalized_tokens) < 3:
@@ -134,6 +141,12 @@ class RuleClassifier(Rule):
     def apply(self, message_texts):
         msg_classifier = MessageClassifier()
         self.message_type = msg_classifier.predict_message_type(message_texts.message_text)
+
+        if self.message_type is 'A':
+            rule_short_message = RuleShortMessage()
+            if rule_short_message.apply(message_texts) is True:
+                self.message_type = 'I'
+
         self.rule_type = self.message_type
         print "Applied Rule:" , "classifier"
         return True
