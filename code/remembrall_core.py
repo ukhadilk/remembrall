@@ -142,6 +142,9 @@ class Message(object):
         postgres.con.close()
 
     def construct_remember_dict_list(self):
+        if len(self.verbs) == 0:
+            self.verbs.append("V")
+
         for n in self.nouns:
             for v in self.verbs:
                 index_dict = dict()

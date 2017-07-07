@@ -33,7 +33,7 @@ class RuleGreeting(Rule):
     def __init__(self):
         Rule.__init__(self, type="G", priority=1)
 
-        self.greeting_set = {'hi', 'hey', 'hello', 'greetings'}
+        self.greeting_set = {'hi', 'hey', 'hello', 'greetings', 'bonjour'}
         self.day_time_set = {"morning", "afternoon", "evening", "night", "noon"}
 
     def check_for_greeting(self, message_texts):
