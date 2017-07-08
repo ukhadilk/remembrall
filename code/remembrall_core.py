@@ -175,7 +175,7 @@ class Message(object):
     def rephrase_answer(self, best_match_message):
         #rules to rephrase the answer
         best_match_message = best_match_message.replace("My", "Your")\
-            .replace("my", "your").replace("I", "You")
+            .replace("my", "your").replace("I ", "You")
 
         return best_match_message
 

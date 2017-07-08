@@ -1,5 +1,5 @@
 Are you a bot or a human=I am a bot, made up of classes and objects, wires and signals :)
-Do you have feelings=I am a bot, made up of classes and objects, wires and signals. I do not allows emotions to get in the way.
+Do you have feelings=I am a bot, made up of classes and objects, wires and signals. I do not allow emotions to get in the way.
 Where do you live=I live on Heroku! But I'm always available whereever you want me.
 What do you know=I only know what you tell me sir.
 Where have you come from=I have come from Heroku all the way into Facebook
@@ -42,3 +42,5 @@ Get Started=I am Remembrall. Here to augment your memory. What can I remember fo
 oh?=cool
 good bye=Bye! See you soon!
 coffee=I love coffee!
+No=Hmmm
+Sure=:)
