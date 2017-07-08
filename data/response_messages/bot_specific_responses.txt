@@ -1,12 +1,10 @@
-I serve at your pleasure my master. Let's talk about you!
-I am not at liberty to divulge that information ;)
-I don't know! I am committed to using my memory to save your information, and don't allow my information in memory :)
-Let that remain a secret!
-Thank you for asking! You know, I am a bot made up of Python code. I don't think I can answer that
-I wish I could answer. But I am too busy remembering your information.
-Enough about me :) I serve at your pleasure.
-Sweet of you to ask. But I am here to serve you my master.
-I'll let you keep guessing!
-Maybe someday when we become close friends, we'll talk about this?
-I will tell you later? For now I'm busy remembering and revising your information so that it is at your fingertips when you need it!
+I serve at your pleasure. Here to augment your memory, tell me what I can remember
+I am not at liberty to divulge that information :)
+I don't know! I am committed to using my memory to save your information :)
+Let that remain a secret! I am here to help you remember things for you.
+Thank you for asking! You know, I am a bot made up of Python code. I am here to help you remember things for you.
+I wish I could answer. I am here to help you remember things for you.
+Sweet of you to ask. But I am here to help you remember things for you.
+I'll let you keep guessing! I am here to help you remember things for you.
+I will tell you later? For now I am here to help you remember things for you.
 
