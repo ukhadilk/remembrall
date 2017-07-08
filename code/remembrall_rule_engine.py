@@ -76,12 +76,12 @@ class RuleKnownQA(Rule):
 class RuleInvalid(Rule):
     #INVALID
     def __init__(self):
-        Rule.__init__(self, type="I", priority=3)
+        Rule.__init__(self, type="N", priority=3)
 
     def apply(self, message_texts):
         if len(message_texts.message_text) < 3:
-            self.message_type = "I"
-            print "Applied Rule:", "I"
+            self.message_type = "N"
+            print "Applied Rule:", "N"
 
             return True
         return False
@@ -120,11 +120,11 @@ class RuleBotSpecific(Rule):
 
 class RuleShortMessage(Rule):
     def __init__(self):
-        Rule.__init__(self, type="I", priority=991)
+        Rule.__init__(self, type="N", priority=991)
 
     def apply(self, message_texts):
         if len(message_texts.normalized_tokens) < 3:
-            self.message_type = "I"
+            self.message_type = "N"
             print "Applied Rule:", "6"
 
             return True
@@ -145,7 +145,7 @@ class RuleClassifier(Rule):
         if self.message_type is 'A':
             rule_short_message = RuleShortMessage()
             if rule_short_message.apply(message_texts) is True:
-                self.message_type = 'I'
+                self.message_type = 'N'
 
         self.rule_type = self.message_type
         print "Applied Rule:" , "classifier"

@@ -115,7 +115,7 @@ class Message(object):
         self.message_type = ruleEngine.apply_rules(self.messagetexts)
 
     def get_response_message(self):
-        if self.message_type in {'A', 'T', 'C', 'I', 'B', 'G'}:
+        if self.message_type in {'A', 'T', 'C', 'I', 'B', 'G', 'N'}:
             return random.choice(response_dict[self.message_type])
         elif self.message_type == "K":
             if self.normalized_message in known_qa_dict:
@@ -243,7 +243,7 @@ if __name__ == '__main__':
 
         msg.identify_message_type()
         msg.insert_in_log_table()
-        if msg.message_type in {'T', 'I', 'C', 'K', 'B', 'G'}:
+        if msg.message_type in {'T', 'I', 'C', 'K', 'B', 'G', 'N'}:
             try:
                 response_message_text=msg.get_response_message()
             except LookupError, e:
