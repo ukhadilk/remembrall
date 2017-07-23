@@ -49,8 +49,7 @@ class UserTableManager(object):
             print "Error for: ", usr_id
             print err
             print "Error while calling Facebook API"
-            print "Exiting"
-            raise SystemExit
+            print "Skipping"
 
     def full_table_process(self):
         self.get_ids_from_log()
