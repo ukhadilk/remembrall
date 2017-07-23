@@ -41,6 +41,7 @@ def read_respond_messages():
         #msg.identify_rule_based()
         msg.identify_message_type()
         msg.insert_in_log_table()
+        msg.get_profile()
         print msg.message_type
         #T=Thanks
         #I=Insult

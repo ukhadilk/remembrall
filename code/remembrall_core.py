@@ -1,6 +1,7 @@
 import nltk
 from fuzzywuzzy import fuzz
 from remembrall_db_helper import PostgresHelper
+from remembrall_usr_table import UserTableManager
 import remembrall_rule_engine
 import logging as log
 import re
@@ -93,6 +94,11 @@ class Message(object):
         self.message_id = 0
         self.messagetexts = MessageTexts(self.message_text, self.normalized_message, self.tokenized_message, self.normalized_tokens)
 
+    def get_profile(self):
+        userTableManager = UserTableManager()
+        exists = userTableManager.profile_exists(self.usr_id)
+        if exists is False:
+            userTableManager.process(self.usr_id)
 
     def remove_bot_specific_words(self):
         pass

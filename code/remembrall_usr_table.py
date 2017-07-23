@@ -1,9 +1,11 @@
 import datetime
 
 from remembrall_db_helper import PostgresHelper
+
 import remembrall_util
 import urllib2
 import json
+
 
 config_dict = remembrall_util.get_configs()
 
@@ -45,7 +47,7 @@ class UserTableManager(object):
             print "Exiting"
             raise SystemExit
 
-    def process(self):
+    def full_table_process(self):
         self.get_ids_from_log()
 
         for usr_id in self.usr_ids_to_fetch:
@@ -58,10 +60,30 @@ class UserTableManager(object):
 
         self.update_profiles()
 
+    def process(self, usr_id):
+        profile = self.get_user_profile_info(usr_id=usr_id)
+        profile['usr_id'] = usr_id
+        profile['cr_ts'] = str(datetime.datetime.now())
+        self.profiles_to_insert.append(profile)
+
+        self.update_profiles()
+
+    def profile_exists(self, usr_id):
+        postgres = PostgresHelper()
+        results = postgres.postgres_select(table_name=config_dict['USR_TABLE'], condition=" WHERE usr_id=%s",
+                                           parameters=[usr_id], return_dict=True)
+        print results
+        if results is not None and len(results) > 0:
+            return True
+        return False
 
 if __name__ == '__main__':
     userTableManager = UserTableManager()
-    userTableManager.process()
+    print userTableManager.profile_exists("1565516966852814")
+    userTableManager.process("1565516966852814")
+    #userTableManager.full_table_process()
+
+
 
 
 
