@@ -35,7 +35,7 @@ class UserTableManager(object):
             self.usr_ids_to_fetch.add(dd['usr_id'])
 
     def get_user_profile_info(self, usr_id):
-        if usr_id is None or usr_id.trim() == "":
+        if usr_id is None or usr_id.strip() == "":
             return None
         try:
             url = "https://graph.facebook.com/v2.6/{}?fields=first_name,last_name,timezone&access_token={}".format(usr_id, config_dict['PAGE_ACCESS_TOKEN'])
