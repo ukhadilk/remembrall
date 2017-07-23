@@ -35,13 +35,18 @@ class UserTableManager(object):
             self.usr_ids_to_fetch.add(dd['usr_id'])
 
     def get_user_profile_info(self, usr_id):
+        if usr_id is None or usr_id.trim() == "":
+            return None
         try:
             url = "https://graph.facebook.com/v2.6/{}?fields=first_name,last_name,timezone&access_token={}".format(usr_id, config_dict['PAGE_ACCESS_TOKEN'])
             print url
+            print len(self.profiles_to_insert)
+            print usr_id
             response = urllib2.urlopen(url)
             data = json.load(response)
             return data
         except Exception as err:
+            print "Error for: ", usr_id
             print err
             print "Error while calling Facebook API"
             print "Exiting"
@@ -54,6 +59,8 @@ class UserTableManager(object):
             if usr_id == 'urjit':
                 continue
             profile = self.get_user_profile_info(usr_id=usr_id)
+            if profile is None:
+                continue
             profile['usr_id'] = usr_id
             profile['cr_ts'] = str(datetime.datetime.now())
             self.profiles_to_insert.append(profile)
