@@ -79,9 +79,7 @@ class UserTableManager(object):
 
 if __name__ == '__main__':
     userTableManager = UserTableManager()
-    print userTableManager.profile_exists("1565516966852814")
-    userTableManager.process("1565516966852814")
-    #userTableManager.full_table_process()
+    userTableManager.full_table_process()
 
 
 
