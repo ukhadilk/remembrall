@@ -159,3 +159,60 @@ class PostgresHelper(object):
             raise SystemExit
 
 
+    def postgres_update_dictionary_list(self, table_name, dict_list):
+        if table_name == "" or table_name is None:
+            log.error("Table name not specified")
+            raise ValueError("Table name not specified")
+        if type(dict_list) is not list:
+            raise TypeError("parameters to postgres_update_dictionary_list should be a list")
+
+        try:
+            log.debug("Updating")
+            cur_update_dict = self.con.cursor()
+            for record_tup in dict_list:
+                print record_tup
+                key = record_tup[0]
+                val = record_tup[1]
+                dd = record_tup[2]
+
+
+                if key == " " or key is None or key == "":
+                    raise ValueError("key not specified")
+
+                update_dict_command = "UPDATE {} SET {} WHERE {}='{}'".format \
+                    (table_name, ', '.join('{}=%s'.format(k) \
+                                            for k in dd), key, val)
+                print update_dict_command
+                try:
+                    cur_update_dict.execute(update_dict_command, dd.values())
+
+                except Exception as err:
+                    print 'Exception table: ', table_name, ', sql: ', update_dict_command, dd.values()
+                    print err
+                    try:
+                        log.error("Error in insertion command")
+
+                        log.error("Postgres error [{}]: {}".format(err.args[0],
+                                                           err.args[1]))
+                    except IndexError:
+                        log.error("Postgres Error: {}".format(str(err)))
+                    raise SystemExit
+            self.con.commit()
+            cur_update_dict.close()
+
+        except Exception as err:
+            try:
+                log.error("Postgres error [{}]: {}".format(err.args[0],
+                                               err.args[1]))
+            except IndexError:
+                log.error("Postgres Error: {}".format(str(err)))
+                raise SystemExit
+
+if __name__ == "__main__":
+    rm = PostgresHelper()
+    rm.postgres_update_dictionary_list("rmbrbot.usr_table", [("usr_id", "testabc", {"timezone": "7"})])
+
+
+
+
+
