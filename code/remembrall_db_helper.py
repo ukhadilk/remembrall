@@ -208,9 +208,55 @@ class PostgresHelper(object):
                 log.error("Postgres Error: {}".format(str(err)))
                 raise SystemExit
 
+
+    def postgres_executor(self, command, return_dict=False):
+        fetched_rows = []
+        try:
+            if return_dict:
+                cur_postgres_executor = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            else:
+                cur_postgres_executor = self.con.cursor()
+
+            try:
+                cur_postgres_executor.execute(command)
+                fetched_rows = []
+                for row in cur_postgres_executor:
+                    fetched_rows.append(row)
+                cur_postgres_executor.close()
+
+            except Exception as err:
+                print err
+                try:
+                    log.error("Error in insertion command")
+
+                    log.error("Postgres error [{}]: {}".format(err.args[0],
+                                                       err.args[1]))
+                except IndexError:
+                    log.error("Postgres Error: {}".format(str(err)))
+                raise SystemExit
+
+            return fetched_rows
+
+        except Exception as err:
+            try:
+                log.error("Postgres error [{}]: {}".format(err.args[0],
+                                               err.args[1]))
+            except IndexError:
+                log.error("Postgres Error: {}".format(str(err)))
+                raise SystemExit
+
 if __name__ == "__main__":
     rm = PostgresHelper()
-    rm.postgres_update_dictionary_list("rmbrbot.usr_table", [("usr_id", "testabc", {"timezone": "7"})])
+    #rm.postgres_update_dictionary_list("rmbrbot.usr_table", [("usr_id", "testabc", {"timezone": "7"})])
+
+    cmd = "SELECT distinct A.usr_id from {} A " \
+          "left outer join {} B " \
+          "on A.usr_id = B.usr_id " \
+          "where B.usr_id is NULL".format(config_dict['LOG_TABLE'], config_dict['USR_TABLE'])
+
+    print cmd
+
+    print rm.postgres_executor(cmd, return_dict=True)
 
 
 
