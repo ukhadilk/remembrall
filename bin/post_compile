@@ -7,4 +7,8 @@
     #bin/install_nltk_data
 #fi
 
+
+cd /app/code/remembrall_app.py
+mvn dependency:copy-dependencies -DoutputDirectory=/app/jars
+
 echo "-----> Post-compile done"
