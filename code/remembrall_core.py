@@ -16,7 +16,7 @@ import remembrall_util
 config_dict = remembrall_util.get_configs()
 response_dict = remembrall_util.load_saved_response_messages()
 bot_specific_question_phrases = remembrall_util.load_bot_specific_questions()
-reminder = Reminders()
+#reminder = Reminders()
 
 known_qa_dict = remembrall_rule_engine.known_qa_dict
 q_set = {"why", "what", "when", "who", "where", "how", "which"}
