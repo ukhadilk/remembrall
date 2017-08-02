@@ -1,7 +1,7 @@
 import nltk
 from fuzzywuzzy import fuzz
 
-from code.remembrall_reminder import Reminders
+from remembrall_reminder import Reminders
 from remembrall_db_helper import PostgresHelper
 from remembrall_usr_table import UserTableManager
 import remembrall_rule_engine
