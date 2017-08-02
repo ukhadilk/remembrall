@@ -8,6 +8,7 @@ import remembrall_util
 config_dict = remembrall_util.get_configs()
 class Reminders(object):
     def __init__(self):
+        remembrall_util.fetch_jars()
         self.jar_files = os.path.join(config_dict['PARENT_DIR'], config_dict['su_jars_path'])
         self.sutime = SUTime(jars=self.jar_files, mark_time_ranges=False)
         self.curr_time = []

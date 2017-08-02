@@ -1,5 +1,7 @@
 import nltk
 from fuzzywuzzy import fuzz
+
+from code.remembrall_reminder import Reminders
 from remembrall_db_helper import PostgresHelper
 from remembrall_usr_table import UserTableManager
 import remembrall_rule_engine
@@ -14,7 +16,7 @@ import remembrall_util
 config_dict = remembrall_util.get_configs()
 response_dict = remembrall_util.load_saved_response_messages()
 bot_specific_question_phrases = remembrall_util.load_bot_specific_questions()
-
+reminder = Reminders()
 
 known_qa_dict = remembrall_rule_engine.known_qa_dict
 q_set = {"why", "what", "when", "who", "where", "how", "which"}

@@ -7,6 +7,6 @@
     #bin/install_nltk_data
 #fi
 
-aws s3 sync s3://remembrall-bot-jars /app/jar
+
 
 echo "-----> Post-compile done"
