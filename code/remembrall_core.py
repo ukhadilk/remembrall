@@ -18,7 +18,9 @@ response_dict = remembrall_util.load_saved_response_messages()
 bot_specific_question_phrases = remembrall_util.load_bot_specific_questions()
 try:
     reminder = Reminders()
+    print "Successfully loaded reminder!"
 except Exception as e:
+    print "Loading reminder failed"
     print str(e)
 
 known_qa_dict = remembrall_rule_engine.known_qa_dict

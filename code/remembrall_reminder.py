@@ -10,6 +10,9 @@ class Reminders(object):
     def __init__(self):
         remembrall_util.fetch_jars()
         self.jar_files = os.path.join(config_dict['PARENT_DIR'], config_dict['su_jars_path'])
+        print "Printing available jars: "
+        for name in os.listdir(self.jar_files):
+            print name
         self.sutime = SUTime(jars=self.jar_files, mark_time_ranges=False)
         self.curr_time = []
         self.curr_type = ""
