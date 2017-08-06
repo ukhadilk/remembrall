@@ -86,17 +86,7 @@ def load_saved_response_messages():
             return response_messages
     return response_messages
 
-def fetch_jars():
-    jar_path=os.path.join(config_dict['PARENT_DIR'], config_dict['su_jars_path'])
-    print jar_path
-    if len([name for name in os.listdir(jar_path) if os.path.isfile(name)]) < 2:
-        return_code = subprocess.call([os.path.join(config_dict['PARENT_DIR'], config_dict['jar_collector'])])
-        for name in os.listdir(jar_path):
-            print name
-
-        print return_code
 
 
 if __name__ == '__main__':
     print get_configs()
-    print fetch_jars()

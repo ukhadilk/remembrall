@@ -14,6 +14,4 @@ scipy>=0.13.3
 scikit-learn>=0.18.1
 sklearn>=0.0
 urllib3>=1.7.1
-sutime>=0.2.0
-awscli>=1.11.128
-boto3>=1.4.5
+natty>=0.2.4
