@@ -5,6 +5,7 @@ from remembrall_reminder import Reminders
 from remembrall_db_helper import PostgresHelper
 from remembrall_usr_table import UserTableManager
 import remembrall_rule_engine
+
 import logging as log
 import re
 
@@ -16,12 +17,7 @@ import remembrall_util
 config_dict = remembrall_util.get_configs()
 response_dict = remembrall_util.load_saved_response_messages()
 bot_specific_question_phrases = remembrall_util.load_bot_specific_questions()
-try:
-    reminder = Reminders()
-    print "Successfully loaded reminder!"
-except Exception as e:
-    print "Loading reminder failed"
-    print str(e)
+reminder = Reminders()
 
 known_qa_dict = remembrall_rule_engine.known_qa_dict
 q_set = {"why", "what", "when", "who", "where", "how", "which"}
@@ -130,6 +126,21 @@ class Message(object):
     def get_response_message(self):
         if self.message_type in {'A', 'T', 'C', 'I', 'B', 'G', 'N'}:
             return random.choice(response_dict[self.message_type])
+
+        elif self.message_type == "R":
+            reminder.is_reminder(self.message_text)
+            userTableManager = UserTableManager()
+            #self.usr_id = "urjit"
+            offset = userTableManager.get_usr_timezone(self.usr_id)
+            print "offset, ", offset
+            print "Got usr timezone"
+            reminder.extract_date_time(offset=offset)
+            print "Updating now"
+            reminder.update_reminder_table(usr_id=self.usr_id, msg_id=self.message_id)
+            print "Done updating"
+            return random.choice(response_dict['A'])
+
+
         elif self.message_type == "K":
             if self.normalized_message in known_qa_dict:
                 return known_qa_dict[self.normalized_message]

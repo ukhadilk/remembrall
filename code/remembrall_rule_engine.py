@@ -1,11 +1,14 @@
 import remembrall_util
 from remembrall_msg_type_classifier import MessageClassifier
+from remembrall_reminder import Reminders
 
 known_qa_dict = remembrall_util.load_saved_response_known_qa()
+reminder = Reminders()
 
 class RuleEngine(object):
     def __init__(self):
-        self.rules_list = [RuleGreeting(), RuleInvalid(), RuleThankYou(), RuleKnownQA(), RuleBotSpecific(), RuleClassifier(), RuleShortMessage()]
+        self.rules_list = [RuleGreeting(), RuleInvalid(), RuleThankYou(), RuleKnownQA(), RuleBotSpecific(),
+                           RuleReminder(), RuleClassifier(), RuleShortMessage()]
         self.rules = sorted((rule for rule in self.rules_list), key=lambda x: x.priority)
 
     def apply_rules(self, message_texts):
@@ -115,6 +118,18 @@ class RuleBotSpecific(Rule):
 
                 return True
 
+        return False
+
+
+class RuleReminder(Rule):
+    #REMINDER
+    def __init__(self):
+        Rule.__init__(self, type="R", priority=6)
+
+    def apply(self, message_texts):
+        if reminder.is_reminder(text=message_texts.message_text) is True:
+            print "Applied Rule: ", "R"
+            return True
         return False
 
 

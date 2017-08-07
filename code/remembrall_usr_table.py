@@ -83,6 +83,18 @@ class UserTableManager(object):
             return True
         return False
 
+    def get_usr_timezone(self, usr_id):
+
+        postgres = PostgresHelper()
+        results = postgres.postgres_select(table_name=config_dict['USR_TABLE'], condition=" WHERE usr_id=%s",
+                                           parameters=[usr_id], req_column_list=['timezone'], return_dict=True)
+        print "results" , results
+        try:
+            return results[0]['timezone']
+        except:
+            print "Could not fetch timezone"
+            return 0
+
 if __name__ == '__main__':
     userTableManager = UserTableManager()
     userTableManager.full_table_process()
