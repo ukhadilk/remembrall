@@ -1,6 +1,8 @@
 import os
 import re
 import json
+
+from decimal import Decimal
 from natty import DateParser
 from datetime import datetime, timedelta
 from remembrall_db_helper import PostgresHelper
@@ -32,9 +34,13 @@ class Reminders(object):
 
     def extract_date_time(self, offset):
         try:
-            if "in" in self.message_text or "after" in self.message_text:
+            print self.message_text
+            if " in " in self.message_text or " after " in self.message_text:
                 offset = 0
+            print "before", self.date_result
+            print "offset", offset
             self.date_result += timedelta(hours=offset)
+            print "after", self.date_result
             self.year = self.date_result.year
             self.month = self.date_result.month
             self.day = self.date_result.day
@@ -77,6 +83,7 @@ if __name__ == "__main__":
 
         print reminder.is_reminder(ip)
         d = float(Decimal('-7'))
+        print d
         reminder.extract_date_time(offset=d)
         print reminder.date_result
         print "Y:", reminder.year, "M:", reminder.month, "D:", reminder.day, "H:", reminder.hour, "M:", reminder.min
