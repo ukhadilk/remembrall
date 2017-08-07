@@ -31,12 +31,15 @@ class Reminders(object):
         return False
 
     def extract_date_time(self, offset):
-        self.date_result += timedelta(hours=offset)
-        self.year = self.date_result.year
-        self.month = self.date_result.month
-        self.day = self.date_result.day
-        self.hour = self.date_result.hour
-        self.min = self.date_result.minute
+        try:
+            self.date_result += timedelta(hours=offset)
+            self.year = self.date_result.year
+            self.month = self.date_result.month
+            self.day = self.date_result.day
+            self.hour = self.date_result.hour
+            self.min = self.date_result.minute
+        except Exception as e:
+            print str(e)
 
     def update_reminder_table(self, usr_id, msg_id):
         print "In here: "
