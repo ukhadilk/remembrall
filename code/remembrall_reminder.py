@@ -32,6 +32,8 @@ class Reminders(object):
 
     def extract_date_time(self, offset):
         try:
+            if "in" in self.message_text or "after" in self.message_text:
+                offset = 0
             self.date_result += timedelta(hours=offset)
             self.year = self.date_result.year
             self.month = self.date_result.month
@@ -43,7 +45,7 @@ class Reminders(object):
 
     def update_reminder_table(self, usr_id, msg_id):
         print "In here: "
-        remember_dict = {}
+        reminder_dict = {}
         try:
             reminder_dict = {'usr_id':  usr_id
                             ,'msg_id': msg_id
@@ -68,13 +70,14 @@ class Reminders(object):
 
 if __name__ == "__main__":
     reminder = Reminders()
-    print reminder.is_reminder("Remind me to go there on Nov 2")
-    print reminder.year
+    #print reminder.is_reminder("Remind me to go there on Nov 2")
+    #print reminder.year
     while(True):
         ip = raw_input("Enter here:")
 
         print reminder.is_reminder(ip)
-        reminder.extract_date_time()
+        d = float(Decimal('-7'))
+        reminder.extract_date_time(offset=d)
         print reminder.date_result
         print "Y:", reminder.year, "M:", reminder.month, "D:", reminder.day, "H:", reminder.hour, "M:", reminder.min
 

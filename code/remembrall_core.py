@@ -131,7 +131,7 @@ class Message(object):
             reminder.is_reminder(self.message_text)
             userTableManager = UserTableManager()
             #self.usr_id = "urjit"
-            offset = userTableManager.get_usr_timezone(self.usr_id)
+            offset = float(userTableManager.get_usr_timezone(self.usr_id))
             print "offset, ", offset
             print "Got usr timezone"
             reminder.extract_date_time(offset=offset)
