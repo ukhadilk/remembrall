@@ -24,7 +24,7 @@ class Reminders(object):
     def is_reminder(self, text):
         result = DateParser(text).result()
         print result
-        if len(result) > 0:
+        if result is not None and len(result) > 0:
             self.date_result = result[0].astimezone(timezone('UTC'))
             print self.date_result
             self.message_text = text
