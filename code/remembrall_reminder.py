@@ -39,7 +39,7 @@ class Reminders(object):
                 offset = 0
             print "before", self.date_result
             print "offset", offset
-            self.date_result += timedelta(hours=offset)
+            self.date_result -= timedelta(hours=offset)
             print "after", self.date_result
             self.year = self.date_result.year
             self.month = self.date_result.month
