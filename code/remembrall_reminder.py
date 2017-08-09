@@ -7,7 +7,9 @@ from natty import DateParser
 from datetime import datetime, timedelta
 from remembrall_db_helper import PostgresHelper
 import remembrall_util
+import pytz
 from pytz import timezone
+
 
 config_dict = remembrall_util.get_configs()
 class Reminders(object):
@@ -35,6 +37,8 @@ class Reminders(object):
     def extract_date_time(self, offset):
         try:
             print self.message_text
+            result = DateParser(self.message_text).result()
+            self.date_result = result[0].astimezone(tz=pytz._FixedOffset((offset*60)))
             if " in " in self.message_text or " after " in self.message_text:
                 offset = 0
             print "before", self.date_result
