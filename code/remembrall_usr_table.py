@@ -70,6 +70,7 @@ class UserTableManager(object):
         profile = self.get_user_profile_info(usr_id=usr_id)
         profile['usr_id'] = usr_id
         profile['cr_ts'] = str(datetime.datetime.now())
+        del profile['id']
         self.profiles_to_insert.append(profile)
 
         self.update_profiles()
