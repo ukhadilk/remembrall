@@ -19,7 +19,7 @@ def return_privacy_page():
     return send_from_directory(directory=static_dir, filename='remembrall_privacy.html')
 
 
-@app.route('/', methods=['GET'])
+@app.route('/facebook/', methods=['GET'])
 def verification_get_method():
     if request.args.get('hub.verify_token', '') == \
             config_dict['VERIFICATION_TOKEN']:
@@ -30,7 +30,7 @@ def verification_get_method():
         return 'Error, wrong validation token'
 
 
-@app.route('/', methods=['POST'])
+@app.route('/facebook/', methods=['POST'])
 def read_respond_messages():
     print "Handling Messages"
     payload = request.get_data()
