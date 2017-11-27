@@ -71,7 +71,7 @@ class PostgresHelper(object):
                 log.error("Postgres Error: {}".format(str(err)))
                 raise SystemExit
 
-    def postgres_select(self, table_name, req_column_list='*', return_dict=False,
+    def postgres_select(self, table_name, req_column_list='*', return_dict=False, distinct=False,
                         condition="", parameters=[]):
         """
 
@@ -89,7 +89,11 @@ class PostgresHelper(object):
             else:
                 cur_select = self.con.cursor()
 
-            select_command = "SELECT {} FROM {} {} ".format(', '.join( \
+            if distinct == "False":
+                dis = ""
+            else:
+                dis = "DISTINCT"
+            select_command = "SELECT {} {} FROM {} {} ".format(dis, ', '.join( \
                 '{}'.format(col) for col in req_column_list),\
                 table_name,condition)
 

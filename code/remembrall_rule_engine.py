@@ -8,7 +8,7 @@ reminder = Reminders()
 class RuleEngine(object):
     def __init__(self):
         self.rules_list = [RuleGreeting(), RuleInvalid(), RuleThankYou(), RuleKnownQA(), RuleBotSpecific(),
-                           RuleReminder(), RuleClassifier(), RuleShortMessage()]
+                           RuleReminder(), RuleClassifier(), RuleShortMessage(), RuleList()]
         self.rules = sorted((rule for rule in self.rules_list), key=lambda x: x.priority)
 
     def apply_rules(self, message_texts):
@@ -132,6 +132,20 @@ class RuleReminder(Rule):
             return True
         return False
 
+class RuleList(Rule):
+    #LIST ALL REMINDERS
+    def __init__(self):
+        Rule.__init__(self, type="L", priority=7)
+        self.list_phrase_set = {"my reminders", "what all you remember",
+                                   "what you remember", "what do you remember", "what all do you remember",
+                                "list all"}
+
+    def apply(self, message_texts):
+        for ll in self.list_phrase_set:
+            if ll in message_texts.message_text.lower():
+                print "Applied Rule:", "L"
+                return True
+        return False
 
 class RuleShortMessage(Rule):
     def __init__(self):
@@ -144,7 +158,6 @@ class RuleShortMessage(Rule):
 
             return True
         return False
-
 
 
 class RuleClassifier(Rule):

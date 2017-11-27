@@ -147,6 +147,27 @@ class Message(object):
             else:
                 return known_qa_dict[self.message_text]
 
+        elif self.message_type == 'L':
+            postgres = PostgresHelper()
+            answers = postgres.postgres_select(table_name=config_dict['MAIN_TABLE'],
+                                               req_column_list=['msg_text'],
+                                               return_dict=True,
+                                               distinct=True
+                                               )
+            postgres.con.close()
+
+            return_message = ""
+            i = 0
+            print answers
+            for ans in answers:
+                i += 1
+                return_message += str(i)
+                return_message += ". "
+                return_message += ans['msg_text']
+                return_message += "\n"
+
+            return return_message
+
         else:
             return random.choice(response_dict[self.A])
 
@@ -276,6 +297,28 @@ if __name__ == '__main__':
 
         elif msg.message_type == 'Q':
             response_message_text = msg.seek()
+
+        elif msg.message_type == "L":
+            postgres = PostgresHelper()
+            answers = postgres.postgres_select(table_name=config_dict['MAIN_TABLE'],
+                                               req_column_list=['msg_text'],
+                                               return_dict=True,
+                                               distinct=True
+                                               )
+            postgres.con.close()
+
+            return_message = ""
+            i = 0
+            print answers
+            for ans in answers:
+                i += 1
+                return_message += str(i)
+                return_message += ". "
+                return_message += ans['msg_text']
+                return_message += "\n"
+
+            response_message_text = return_message
+
 
         else:
             response_message_text = msg.remember()

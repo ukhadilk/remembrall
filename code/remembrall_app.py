@@ -11,6 +11,15 @@ app = Flask(__name__)
 config_dict = remembrall_util.get_configs()
 
 
+# T=Thanks
+# I=Insult
+# C=compliment
+# K=known QA
+# B=bot specific question
+# N=invalid
+# L=list
+
+
 @app.route('/privacy/', methods=['GET'])
 def return_privacy_page():
     print "In here"
@@ -43,13 +52,8 @@ def read_respond_messages():
         msg.insert_in_log_table()
         msg.get_profile()
         print msg.message_type
-        #T=Thanks
-        #I=Insult
-        #C=compliment
-        #K=known QA
-        #B=bot specific question
-        #N=invalid
-        if msg.message_type in {'T', 'I', 'C', 'K', 'B', 'N'}:
+
+        if msg.message_type in {'T', 'I', 'C', 'K', 'B', 'N', 'L'}:
             try:
                 response_message_text=msg.get_response_message()
             except LookupError:
