@@ -55,7 +55,8 @@ def read_respond_google_messages():
     print payload
     google_interpreter = GoogleInterpreter()
     response_message_text = google_interpreter.chat(payload=payload)
-    return jsonify({"speech": response_message_text, "displayText": response_message_text,
+    response_message_speech = response_message_text.replace(":)", ".")
+    return jsonify({"speech": response_message_speech, "displayText": response_message_text,
                     "source": "Remembrall"})
 
 class MessageInterpreter(object):
@@ -119,7 +120,6 @@ class FBInterpreter(MessageInterpreter):
             self.process_message()
             self.send_response(config_dict['PAGE_ACCESS_TOKEN'],
                          usr_id)
-
 
     def messaging_events(self, payload):
         """Generate tuples of (sender_id, message_text) from the

@@ -49,3 +49,16 @@ good bye=Bye! See you soon!
 coffee=I love coffee!
 No=Hmmm
 Sure=:)
+How old are you?=I am about an year old now
+You're annoying=I'm still learning. Please type Help to know more on how best to interact with me.
+Answer my question=I'm trying but I'm still learning. Please use complete sentences
+Can you get smarter?=I'm learning everyday!
+You're crazy=Well, I am crazy interested in helping you remember things
+Are you happy?=I'm happy you asked!
+Do you have a hobby?=I love remembering information!
+Are we friends?=Of course we are! I'm always here to help you!
+Where do you work?=I work from the great Heroku! But I'm always available at your fingertips!
+Are you sure?=I answer to the best of my abilites!
+What's up?=Just working to keep your information always accessible!
+I'm back=Welcome back!
+
