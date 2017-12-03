@@ -35,7 +35,8 @@ def load_saved_response_known_qa():
     try:
         with open(response_file_path) as f:
             for line in f:
-                known_qa_dict[line.split("=")[0].lower()] = line.split("=")[1]
+                if "=" in line:
+                    known_qa_dict[line.split("=")[0].lower()] = line.split("=")[1]
     except Exception, e:
         print str(e)
         print "Error! Could not load saved known qa"
