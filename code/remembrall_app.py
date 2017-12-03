@@ -40,7 +40,7 @@ def verification_get_method():
 
 @app.route('/facebook/', methods=['POST'])
 def read_respond_facebook_messages():
-    print "Handling Google Messages"
+    print "Handling Facebook Messages"
     payload = request.get_data()
     print payload
     fb_interpreter = FBInterpreter()
@@ -131,6 +131,9 @@ class FBInterpreter(MessageInterpreter):
             if "message" in message_data and "text" in message_data["message"]:
                 yield message_data["sender"]["id"], \
                       message_data["message"]["text"].encode('unicode_escape')
+            elif "message" in message_data and "sticker_id" in message_data["message"]:
+                yield message_data["sender"]["id"], \
+                      str(message_data["message"]["sticker_id"])
             else:
                 yield message_data["sender"]["id"], ""
 

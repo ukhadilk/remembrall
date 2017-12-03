@@ -94,7 +94,7 @@ class RuleThankYou(Rule):
 
     def __init__(self):
         Rule.__init__(self, type="T", priority=4)
-        self.thank_set = {"thank you!", "thanks!", "thanks", "thank you", "thank u"}
+        self.thank_set = {"thank you!", "thanks!", "thanks", "thank you", "thank u", "369239263222822"}
 
     def apply(self, message_texts):
         if message_texts.message_text.lower() in self.thank_set:
