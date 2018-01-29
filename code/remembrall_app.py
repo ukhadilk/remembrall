@@ -80,7 +80,7 @@ class MessageInterpreter(object):
     def process_message(self):
 
         self.msg.identify_message_type()
-        self.msg.insert_in_log_table()
+        self.msg.insert_in_log_table(self.msg.message_text, io_type="I")
         print self.msg.message_type
 
         if self.msg.message_type in {'T', 'I', 'C', 'K', 'B', 'N', 'L'}:
@@ -94,7 +94,7 @@ class MessageInterpreter(object):
 
         else:
             self.response_message_text = self.msg.remember()
-
+        self.msg.insert_in_log_table(self.response_message_text, io_type="O")
 
 class FBInterpreter(MessageInterpreter):
 

@@ -171,7 +171,7 @@ class Message(object):
         else:
             return random.choice(response_dict[self.A])
 
-    def insert_in_log_table(self):
+    def insert_in_log_table(self, msg_text, io_type):
         postgres = PostgresHelper()
         curr_max = postgres.postgres_select_max_from(
             table_name=config_dict['LOG_TABLE'],
@@ -179,9 +179,10 @@ class Message(object):
         self.message_id = curr_max + 1
 
         insertion_dict = [{'usr_id': self.usr_id, 'msg_id': self.message_id,
-                           'msg_text': self.message_text,
+                           'msg_text': msg_text,
                            'msg_typ':self.message_type,
-                           'cr_ts': str(datetime.datetime.now())}]
+                           'cr_ts': str(datetime.datetime.now()),
+                           'io_flag': io_type}]
         postgres.postgres_insert_dictionary_list(
             dict_list=insertion_dict, table_name=config_dict['LOG_TABLE'])
         postgres.con.close()
@@ -287,7 +288,7 @@ if __name__ == '__main__':
         #msg.identify_rule_based()
 
         msg.identify_message_type()
-        msg.insert_in_log_table()
+        msg.insert_in_log_table(msg.message_text, "I")
         if msg.message_type in {'T', 'I', 'C', 'K', 'B', 'G', 'N'}:
             try:
                 response_message_text=msg.get_response_message()
@@ -322,4 +323,5 @@ if __name__ == '__main__':
 
         else:
             response_message_text = msg.remember()
+        msg.insert_in_log_table(response_message_text, "O")
         print response_message_text
